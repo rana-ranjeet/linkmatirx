@@ -9,7 +9,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="auth-page">
-        <main class="auth-shell {{ request()->routeIs('login') ? 'auth-shell-login' : '' }}">
+        <main class="auth-shell {{ request()->routeIs('login') ? 'auth-shell-login' : '' }} {{ request()->routeIs('register') ? 'auth-shell-register' : '' }}">
             <a class="brand brand-auth" href="{{ route('home') }}"><span class="brand-mark">L</span> LINKVIO</a>
             @if (request()->routeIs('login'))
                 <div class="auth-pitch">

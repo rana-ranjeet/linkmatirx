@@ -45,6 +45,12 @@
                     <p>{{ $websiteStats['pending'] }} publisher {{ Str::plural('submission', $websiteStats['pending']) }} waiting for review.</p>
                     <a class="text-link" href="{{ route('admin.websites.index', ['status' => 'pending']) }}">Review submissions <span aria-hidden="true">&rarr;</span></a>
                 </article>
+                <article class="dashboard-card">
+                    <span class="dashboard-icon">03</span>
+                    <h2>SEO blog</h2>
+                    <p>Write, optimize, and publish articles to the public LINKVIO journal.</p>
+                    <a class="text-link" href="{{ route('admin.blog.index') }}">Manage blog posts <span aria-hidden="true">&rarr;</span></a>
+                </article>
             @endif
             <article class="dashboard-card dashboard-card-wide">
                 <span class="dashboard-icon">✓</span>

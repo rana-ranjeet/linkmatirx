@@ -2,6 +2,8 @@
 
 LINKVIO is a Laravel-based SEO publishing marketplace. The current foundation includes a Blade public homepage, advertiser/publisher registration, email verification and password recovery, role-protected workspaces, account settings, publisher website submissions, admin approval/rejection, and an approved-only publisher directory with validated filters. Orders, payments, payouts, and the remaining administration workflows are not implemented yet.
 
+Administrators can create and manage SEO blog posts in the protected admin workspace. Published posts are listed at `/blog`, individual articles have canonical URLs and Article structured data, and `/blog/sitemap.xml` lists published articles.
+
 ## Requirements
 
 - PHP 8.2 or newer with `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, and `zip`
@@ -45,7 +47,9 @@ Local mail uses Laravel's `log` mailer by default. Verification and reset links 
 
 Public registration permits only `advertiser` and `publisher` roles. Admin is never selectable from registration. A trusted operator must assign admin access to a verified account through a controlled deployment/maintenance process. Role-specific dashboards require authentication and verified email; suspended accounts are logged out of protected areas.
 
-Advertiser order processing, checkout, payment verification, payouts, and most admin management screens are future phases.
+To grant local administrator access, create an account normally, verify its email, then run `php artisan app:make-admin your-email@example.com` and confirm the prompt. Sign in at `/login` with that account's own email and password, then open `/admin/blog`. There are no built-in administrator credentials; do not add shared default passwords or publish credentials in the repository.
+
+Advertiser order processing, checkout, payment verification, payouts, and most other admin management screens are future phases.
 
 ## Marketplace data
 

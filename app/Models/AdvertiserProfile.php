@@ -9,7 +9,11 @@ class AdvertiserProfile extends Model
 {
     protected $fillable = [
         'company_name',
+        'business_type',
+        'country_code',
         'phone',
+        'currency',
+        'monthly_budget',
     ];
 
     public function user(): BelongsTo

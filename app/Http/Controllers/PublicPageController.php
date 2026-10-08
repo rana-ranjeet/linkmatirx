@@ -71,14 +71,6 @@ class PublicPageController extends Controller
                 'cta' => 'Browse websites',
                 'route' => 'marketplace.index',
             ],
-            'blog' => [
-                'eyebrow' => 'LINKVIO journal',
-                'title' => 'Ideas for better publisher partnerships',
-                'intro' => 'Our editorial library is being prepared. Check back for original guides and marketplace updates.',
-                'cards' => [],
-                'cta' => 'Explore the marketplace',
-                'route' => 'marketplace.index',
-            ],
             'privacy' => [
                 'eyebrow' => 'Privacy',
                 'title' => 'Privacy notice',

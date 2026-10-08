@@ -4,8 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="description" content="@yield('meta_description', 'Discover vetted publisher websites and build better partnerships with LINKVIO.')">
-    <title>@yield('title', 'SEO publishing marketplace') | {{ config('app.name', 'LINKVIO') }}</title>
+    @php
+        $defaultMetaDescription = 'Discover vetted publisher websites and build better partnerships with LINKVIO.';
+        $seoTitle = html_entity_decode(trim($__env->yieldContent('title', 'SEO publishing marketplace')), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $seoDescription = html_entity_decode(trim($__env->yieldContent('meta_description', $defaultMetaDescription)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $ogTitle = html_entity_decode(trim($__env->yieldContent('og_title', $seoTitle)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $ogDescription = html_entity_decode(trim($__env->yieldContent('og_description', $seoDescription)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $canonicalUrl = trim($__env->yieldContent('canonical_url', url()->current()));
+    @endphp
+    <meta name="description" content="{{ $seoDescription }}">
+    <meta name="robots" content="{{ trim($__env->yieldContent('meta_robots', 'index,follow')) }}">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+    <meta property="og:type" content="{{ trim($__env->yieldContent('og_type', 'website')) }}">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    <title>{{ $seoTitle }} | {{ config('app.name', 'LINKVIO') }}</title>
+    @stack('head')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
