@@ -45,9 +45,9 @@ Local mail uses Laravel's `log` mailer by default. Verification and reset links 
 
 ## Roles and access
 
-Public registration permits only `advertiser` and `publisher` roles. Admin is never selectable from registration. A trusted operator must assign admin access to a verified account through a controlled deployment/maintenance process. Role-specific dashboards require authentication and verified email; suspended accounts are logged out of protected areas.
+Public registration permits only `advertiser` and `publisher` roles. Privileged roles are never selectable from registration. A trusted operator grants super administrator access to a verified account through a controlled deployment/maintenance process. Existing `admin` role records remain a backward-compatible full-access alias. Role-specific dashboards require authentication and verified email; suspended accounts are logged out of protected areas.
 
-To grant local administrator access, create an account normally, verify its email, then run `php artisan app:make-admin your-email@example.com` and confirm the prompt. Sign in at `/login` with that account's own email and password, then open `/admin/blog`. There are no built-in administrator credentials; do not add shared default passwords or publish credentials in the repository.
+To grant local super administrator access, create an account normally, verify its email, then run `php artisan app:make-admin your-email@example.com` and confirm the prompt. Sign in at `/login` with that account's own email and password, then open `/admin/dashboard`. There are no built-in administrator credentials; do not add shared default passwords or publish credentials in the repository.
 
 Advertiser order processing, checkout, payment verification, payouts, and most other admin management screens are future phases.
 
@@ -59,6 +59,10 @@ Only active websites with `status = approved` appear in public search or on the 
 
 Verified publishers can edit their business profile, submit and update website listings, see moderation notes, and pause or resume an approved listing. They can also submit support requests and see only their own requests. Publisher order acceptance, content-file access, delivery verification, earnings, and payouts are not active until their order and financial workflows are implemented.
 
+## Content writer workflow
+
+Run migrations and seed the starter article categories with `php artisan migrate` and `php artisan db:seed --class=Database\Seeders\ArticleCategorySeeder`. A super administrator can create SEO manager and content writer accounts at `/admin/writers`; Laravel sends the normal email verification notification, and each person signs in through the existing `/login` page. SEO managers create briefs, assign writers, manage keywords and metadata, and approve or request changes. Writers can only edit their assigned draft or changes-requested articles and submit them for review. Only a super administrator (including existing legacy `admin` accounts) can publish an SEO-approved article. Rich text is sanitized on save and render; featured images are stored on Laravel's public disk, so configure `php artisan storage:link` for local image URLs.
+
 ## Local demo accounts
 
 To populate a local development database with demo admin, publisher, and seller (advertiser) accounts plus sample listings, set `DEMO_ACCOUNT_PASSWORD` in `.env` to a strong password of at least 12 characters, then run:
@@ -67,7 +71,17 @@ To populate a local development database with demo admin, publisher, and seller 
 php artisan db:seed --class=Database\Seeders\DemoDataSeeder
 ```
 
-All three accounts use that password and have verified email addresses. Sign in at `/login` with `demo-admin@linkvio.test`, `demo-publisher@linkvio.test`, or `demo-seller@linkvio.test`. This seeder is restricted to local and testing environments. Its sample websites use reserved `.test` domains, remain pending admin review, and contain no fabricated SEO metrics; they are not exposed as approved public inventory.
+All five accounts use the password configured in `DEMO_ACCOUNT_PASSWORD` and have verified email addresses. The current local demo password is `04463DC98F6D6639C1FF5FC991899807D8DA694F`:
+
+| Role | Email | Password |
+|---|---|---|
+| Super Admin | `demo-admin@linkvio.test` | `04463DC98F6D6639C1FF5FC991899807D8DA694F` |
+| SEO Manager | `demo-seo-manager@linkvio.test` | `04463DC98F6D6639C1FF5FC991899807D8DA694F` |
+| Content Writer | `demo-content-writer@linkvio.test` | `04463DC98F6D6639C1FF5FC991899807D8DA694F` |
+| Publisher | `demo-publisher@linkvio.test` | `04463DC98F6D6639C1FF5FC991899807D8DA694F` |
+| Seller (Advertiser) | `demo-seller@linkvio.test` | `04463DC98F6D6639C1FF5FC991899807D8DA694F` |
+
+Sign in at `/login`. The password column reflects the current local seed data; if you change `DEMO_ACCOUNT_PASSWORD`, reseed the demo data to update the accounts. These credentials are for local development only—do not use them in production or share them publicly. This seeder is restricted to local and testing environments. Its sample websites use reserved `.test` domains, remain pending admin review, and contain no fabricated SEO metrics; they are not exposed as approved public inventory.
 
 ## Tests and checks
 

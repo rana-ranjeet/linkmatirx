@@ -28,19 +28,19 @@ class MakeAdmin extends Command
             return self::FAILURE;
         }
 
-        if ($user->role === UserRole::Admin) {
-            $this->info('This account already has administrator access.');
+        if ($user->role->isSuperAdmin()) {
+            $this->info('This account already has super administrator access.');
 
             return self::SUCCESS;
         }
 
-        if (! $this->confirm("Grant administrator access to {$user->email}?")) {
+        if (! $this->confirm("Grant super administrator access to {$user->email}?")) {
             $this->warn('No changes were made.');
 
             return self::SUCCESS;
         }
 
-        $user->role = UserRole::Admin;
+        $user->role = UserRole::SuperAdmin;
         $user->save();
 
         $this->info("Administrator access granted to {$user->email}.");

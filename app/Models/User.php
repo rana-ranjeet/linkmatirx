@@ -74,6 +74,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(BlogPost::class, 'author_id');
     }
 
+    public function assignedArticles(): HasMany
+    {
+        return $this->hasMany(BlogPost::class, 'assigned_writer_id');
+    }
+
     public function favoriteWebsites(): BelongsToMany
     {
         return $this->belongsToMany(Website::class, 'website_favorites', 'advertiser_id', 'website_id')

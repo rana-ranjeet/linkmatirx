@@ -155,12 +155,12 @@ class BlogPostTest extends TestCase
         $user = User::factory()->create(['role' => UserRole::Advertiser]);
 
         $this->artisan('app:make-admin', ['email' => $user->email])
-            ->expectsConfirmation("Grant administrator access to {$user->email}?", 'yes')
+            ->expectsConfirmation("Grant super administrator access to {$user->email}?", 'yes')
             ->assertSuccessful();
 
         $this->assertDatabaseHas('users', [
             'id' => $user->id,
-            'role' => UserRole::Admin->value,
+            'role' => UserRole::SuperAdmin->value,
         ]);
     }
 }

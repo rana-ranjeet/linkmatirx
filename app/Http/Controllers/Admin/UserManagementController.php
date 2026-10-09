@@ -53,7 +53,7 @@ class UserManagementController extends Controller
                 ]);
             }
 
-            if ($lockedUser->role === UserRole::Admin) {
+            if ($lockedUser->role->isSuperAdmin()) {
                 throw ValidationException::withMessages([
                     'action' => 'Administrator accounts cannot be changed here. Use the controlled administrator access process.',
                 ]);

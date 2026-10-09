@@ -104,3 +104,46 @@ registrationRoles.forEach((role) => {
 });
 
 updateRegistrationRole();
+
+const richEditor = document.querySelector('[data-rich-editor]');
+const richEditorSource = document.querySelector('[data-rich-editor-source]');
+const richEditorForm = richEditor?.closest('form');
+
+if (richEditor instanceof HTMLElement && richEditorSource instanceof HTMLTextAreaElement && richEditorForm instanceof HTMLFormElement) {
+    if (!richEditor.innerHTML.trim() && richEditorSource.value) {
+        richEditor.textContent = richEditorSource.value;
+    }
+    richEditorSource.value = richEditor.innerHTML;
+    richEditorSource.classList.add('visually-hidden');
+    richEditor.setAttribute('contenteditable', 'true');
+
+    document.querySelectorAll('[data-editor-command]').forEach((button) => {
+        button.addEventListener('click', () => {
+            if (!(button instanceof HTMLButtonElement)) {
+                return;
+            }
+
+            const command = button.dataset.editorCommand;
+            let value = button.dataset.editorValue ?? null;
+
+            if (command === 'createLink' && value === 'prompt') {
+                value = window.prompt('Enter a link URL');
+                if (!value) {
+                    return;
+                }
+            }
+
+            richEditor.focus();
+            document.execCommand(command ?? '', false, value);
+            richEditorSource.value = richEditor.innerHTML;
+        });
+    });
+
+    richEditor.addEventListener('input', () => {
+        richEditorSource.value = richEditor.innerHTML;
+    });
+
+    richEditorForm.addEventListener('submit', () => {
+        richEditorSource.value = richEditor.innerHTML;
+    });
+}

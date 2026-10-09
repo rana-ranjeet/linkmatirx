@@ -10,7 +10,7 @@ class WebsitePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->role === UserRole::Publisher || $user->role === UserRole::Admin;
+        return $user->role === UserRole::Publisher || $user->role->isSuperAdmin();
     }
 
     public function create(User $user): bool

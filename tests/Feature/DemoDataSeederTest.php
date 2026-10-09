@@ -26,7 +26,7 @@ class DemoDataSeederTest extends TestCase
 
         $this->assertDatabaseHas('users', [
             'email' => 'demo-admin@linkvio.test',
-            'role' => UserRole::Admin->value,
+            'role' => UserRole::SuperAdmin->value,
         ]);
         $this->assertDatabaseHas('users', [
             'email' => 'demo-publisher@linkvio.test',
@@ -35,6 +35,14 @@ class DemoDataSeederTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'demo-seller@linkvio.test',
             'role' => UserRole::Advertiser->value,
+        ]);
+        $this->assertDatabaseHas('users', [
+            'email' => 'demo-seo-manager@linkvio.test',
+            'role' => UserRole::SeoManager->value,
+        ]);
+        $this->assertDatabaseHas('users', [
+            'email' => 'demo-content-writer@linkvio.test',
+            'role' => UserRole::ContentWriter->value,
         ]);
 
         $publisher = User::where('email', 'demo-publisher@linkvio.test')->firstOrFail();

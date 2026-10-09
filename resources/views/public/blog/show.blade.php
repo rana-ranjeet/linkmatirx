@@ -40,6 +40,7 @@
                 <p class="eyebrow"><a href="{{ route('blog.index') }}">LINKVIO journal</a></p>
                 <h1>{{ $post->title }}</h1>
                 <p class="blog-article-excerpt">{{ $post->excerpt }}</p>
+                @if ($post->category)<p class="eyebrow">{{ $post->category->name }}</p>@endif
                 <p class="blog-post-date">
                     <time datetime="{{ $post->published_at->toAtomString() }}">{{ $post->published_at->toFormattedDateString() }}</time>
                     · {{ $post->author?->name ?? config('app.name') }}
@@ -47,7 +48,10 @@
             </div>
         </header>
         <div class="container section-space">
-            <div class="blog-article-content">{!! nl2br(e($post->content)) !!}</div>
+            @if ($post->featured_image_path)
+                <img class="article-featured-public" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($post->featured_image_path) }}" alt="{{ $post->title }}">
+            @endif
+            <div class="blog-article-content">@if ($post->content_format === 'html'){!! app(\App\Support\ArticleContentSanitizer::class)->sanitize($post->content) !!}@else{!! nl2br(e($post->content)) !!}@endif</div>
             <a class="back-link" href="{{ route('blog.index') }}">← Back to all articles</a>
         </div>
     </article>

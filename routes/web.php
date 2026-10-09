@@ -4,7 +4,9 @@ use App\Http\Controllers\Admin\WebsiteModerationController;
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\ArticleController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\WriterManagementController;
 use App\Http\Controllers\Advertiser\WebsiteFavoriteController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
@@ -64,11 +66,33 @@ Route::middleware(['auth', 'active', 'verified', 'role:publisher'])->prefix('pub
     Route::patch('/websites/{website}/availability', [WebsiteController::class, 'updateAvailability'])->name('websites.availability');
 });
 
-Route::middleware(['auth', 'active', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'active', 'verified', 'role:content_writer'])->prefix('writer')->name('writer.')->group(function () {
+    Route::get('/dashboard', [ArticleController::class, 'writerDashboard'])->name('dashboard');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'role:seo_manager'])->prefix('seo')->name('seo.')->group(function () {
+    Route::get('/dashboard', [ArticleController::class, 'seoDashboard'])->name('dashboard');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'role:admin,super_admin,seo_manager,content_writer'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::post('/articles/{article}/submit', [ArticleController::class, 'submit'])->name('articles.submit');
+    Route::post('/articles/{article}/review', [ArticleController::class, 'review'])->name('articles.review')->middleware('role:admin,super_admin,seo_manager');
+    Route::post('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish')->middleware('role:admin,super_admin');
+});
+
+Route::middleware(['auth', 'active', 'verified', 'role:admin,super_admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
     Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
     Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
     Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+    Route::get('/writers', [WriterManagementController::class, 'index'])->name('writers.index');
+    Route::post('/writers', [WriterManagementController::class, 'store'])->name('writers.store');
+    Route::patch('/writers/{user}/role', [WriterManagementController::class, 'updateRole'])->name('writers.role');
     Route::get('/websites', [WebsiteModerationController::class, 'index'])->name('websites.index');
     Route::patch('/websites/{website}/review', [WebsiteModerationController::class, 'update'])->name('websites.review');
     Route::get('/blog', [AdminBlogPostController::class, 'index'])->name('blog.index');

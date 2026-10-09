@@ -27,9 +27,14 @@ class DemoDataSeeder extends Seeder
         }
 
         DB::transaction(function () use ($password) {
-            $this->call(WebsiteCategorySeeder::class);
+            $this->call([
+                WebsiteCategorySeeder::class,
+                ArticleCategorySeeder::class,
+            ]);
 
-            $admin = $this->user('demo-admin@linkvio.test', 'Demo Administrator', UserRole::Admin, $password);
+            $admin = $this->user('demo-admin@linkvio.test', 'Demo Super Administrator', UserRole::SuperAdmin, $password);
+            $this->user('demo-seo-manager@linkvio.test', 'Demo SEO Manager', UserRole::SeoManager, $password);
+            $this->user('demo-content-writer@linkvio.test', 'Demo Content Writer', UserRole::ContentWriter, $password);
             $publisher = $this->user('demo-publisher@linkvio.test', 'Demo Publisher', UserRole::Publisher, $password);
             $advertiser = $this->user('demo-seller@linkvio.test', 'Demo Seller', UserRole::Advertiser, $password);
 
@@ -112,8 +117,10 @@ class DemoDataSeeder extends Seeder
         });
 
         $this->command?->info('Demo accounts and pending sample listings are ready.');
-        $this->command?->line('Use the same DEMO_ACCOUNT_PASSWORD for all three accounts:');
+        $this->command?->line('Use the same DEMO_ACCOUNT_PASSWORD for all five accounts:');
         $this->command?->line('  Admin:     demo-admin@linkvio.test');
+        $this->command?->line('  SEO:       demo-seo-manager@linkvio.test');
+        $this->command?->line('  Writer:    demo-content-writer@linkvio.test');
         $this->command?->line('  Publisher: demo-publisher@linkvio.test');
         $this->command?->line('  Seller:    demo-seller@linkvio.test');
         $this->command?->line('Sample websites remain pending review and are not shown in public marketplace listings.');

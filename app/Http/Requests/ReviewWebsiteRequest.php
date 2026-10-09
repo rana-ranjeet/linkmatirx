@@ -10,7 +10,7 @@ class ReviewWebsiteRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->role->value === 'admin';
+        return $this->user()?->role->isSuperAdmin() ?? false;
     }
 
     public function rules(): array
