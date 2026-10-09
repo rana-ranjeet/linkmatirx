@@ -17,6 +17,7 @@ class Website extends Model
         'country_code',
         'language_code',
         'status',
+        'is_active',
         'guest_post_price_cents',
         'link_insertion_price_cents',
         'currency',

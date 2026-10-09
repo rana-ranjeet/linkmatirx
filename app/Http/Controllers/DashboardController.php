@@ -24,14 +24,7 @@ class DashboardController extends Controller
         $websiteStats = [];
         $favoriteCount = 0;
 
-        if ($request->user()->role === UserRole::Publisher) {
-            $websites = Website::where('publisher_id', $request->user()->id);
-            $websiteStats = [
-                'total' => (clone $websites)->count(),
-                'pending' => (clone $websites)->where('status', 'pending')->count(),
-                'approved' => (clone $websites)->where('status', 'approved')->where('is_active', true)->count(),
-            ];
-        } elseif ($request->user()->role === UserRole::Admin) {
+        if ($request->user()->role === UserRole::Admin) {
             $websiteStats = [
                 'pending' => Website::where('status', 'pending')->count(),
             ];

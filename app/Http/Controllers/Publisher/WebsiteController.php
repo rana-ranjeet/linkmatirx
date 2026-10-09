@@ -8,6 +8,7 @@ use App\Models\Website;
 use App\Models\WebsiteCategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class WebsiteController extends Controller
@@ -69,6 +70,26 @@ class WebsiteController extends Controller
 
         return redirect()->route('publisher.websites.index')
             ->with('status', 'Website changes submitted for review.');
+    }
+
+    public function updateAvailability(Request $request, Website $website): RedirectResponse
+    {
+        $this->authorize('update', $website);
+
+        $validated = $request->validate([
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        if ($website->status !== 'approved') {
+            throw ValidationException::withMessages([
+                'is_active' => 'Only approved listings can be paused or made available.',
+            ]);
+        }
+
+        $website->update(['is_active' => $request->boolean('is_active')]);
+
+        return redirect()->route('publisher.websites.index')
+            ->with('status', $website->is_active ? 'Your listing is available in the marketplace.' : 'Your listing has been paused.');
     }
 
     private function attributes(array $data): array

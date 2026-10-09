@@ -22,7 +22,7 @@
                 <article class="dashboard-card">
                     <span class="dashboard-icon">02</span>
                     <h2>Your website listings</h2>
-                    <p>{{ $websiteStats['total'] }} total · {{ $websiteStats['approved'] }} approved · {{ $websiteStats['pending'] }} pending review</p>
+                    <p>Manage submissions and see your current review status.</p>
                     <a class="text-link" href="{{ route('publisher.websites.index') }}">Manage websites <span aria-hidden="true">&rarr;</span></a>
                 </article>
             @elseif ($role->value === 'advertiser')
@@ -41,9 +41,9 @@
             @else
                 <article class="dashboard-card">
                     <span class="dashboard-icon">02</span>
-                    <h2>Website approvals</h2>
-                    <p>{{ $websiteStats['pending'] }} publisher {{ Str::plural('submission', $websiteStats['pending']) }} waiting for review.</p>
-                    <a class="text-link" href="{{ route('admin.websites.index', ['status' => 'pending']) }}">Review submissions <span aria-hidden="true">&rarr;</span></a>
+                    <h2>Admin operations</h2>
+                    <p>Review marketplace activity, manage accounts, and open the administration workspace.</p>
+                    <a class="text-link" href="{{ route('admin.dashboard') }}">Open admin dashboard <span aria-hidden="true">&rarr;</span></a>
                 </article>
                 <article class="dashboard-card">
                     <span class="dashboard-icon">03</span>

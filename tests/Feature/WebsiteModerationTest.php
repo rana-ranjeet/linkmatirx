@@ -101,6 +101,6 @@ class WebsiteModerationTest extends TestCase
         $this->actingAs($publisher)
             ->get(route('publisher.dashboard'))
             ->assertOk()
-            ->assertSee('1 total · 0 approved · 1 pending review');
+            ->assertSee('0 available · 0 paused · 1 under review');
     }
 }

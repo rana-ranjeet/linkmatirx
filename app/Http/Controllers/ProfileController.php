@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,13 +27,32 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
+        $user = $request->user();
+        $user->fill($validated);
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $request->user()->save();
+        $user->save();
+
+        if ($user->role === UserRole::Publisher) {
+            $user->publisherProfile()->updateOrCreate(
+                ['user_id' => $user->id],
+                [
+                    'business_name' => $validated['business_name'] ?? null,
+                    'business_type' => $validated['business_type'] ?? null,
+                    'country_code' => isset($validated['country_code']) ? strtoupper($validated['country_code']) : null,
+                    'phone' => $validated['phone'] ?? null,
+                    'currency' => $validated['currency'] ?? null,
+                    'number_of_sites' => $validated['number_of_sites'] ?? null,
+                    'do_follow_links' => $validated['do_follow_links'] ?? null,
+                    'owns_sites' => $validated['owns_sites'] ?? null,
+                    'already_selling_articles' => $validated['already_selling_articles'] ?? null,
+                ],
+            );
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

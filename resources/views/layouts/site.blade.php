@@ -26,14 +26,14 @@
 <body>
     <header class="site-header">
         <div class="container site-nav">
-            <a class="brand" href="{{ route('home') }}"><span class="brand-mark">L</span> LINKVIO</a>
+            <a class="brand" href="{{ route('home') }}"><span class="brand-mark">L</span> LINKmatrix</a>
             <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
                 <span></span><span></span><span></span>
             </button>
             <nav class="site-nav-links" data-nav-menu aria-label="Main navigation">
                 <div class="nav-primary">
                     <div class="nav-dropdown">
-                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="solutions-menu" data-dropdown-toggle>Solutions <span class="nav-caret" aria-hidden="true"></span></button>
+                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="solutions-menu" data-dropdown-toggle>home <span class="nav-caret" aria-hidden="true"></span></button>
                         <div class="nav-dropdown-menu" id="solutions-menu">
                             <a href="{{ route('marketplace.index') }}" @class(['is-current' => request()->routeIs('marketplace.*')])>Publisher marketplace</a>
                             <a href="{{ route('register', ['role' => 'advertiser']) }}">For advertisers</a>
@@ -41,16 +41,16 @@
                         </div>
                     </div>
                     <div class="nav-dropdown">
-                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="features-menu" data-dropdown-toggle>Features <span class="nav-caret" aria-hidden="true"></span></button>
+                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="features-menu" data-dropdown-toggle>about us <span class="nav-caret" aria-hidden="true"></span></button>
                         <div class="nav-dropdown-menu" id="features-menu">
                             <a href="{{ route('marketplace.index') }}">Website discovery</a>
                             <a href="{{ route('how-it-works') }}">Publisher partnerships</a>
                             @guest<a href="{{ route('register') }}">Campaign workspace</a>@else<a href="{{ route('dashboard') }}">Campaign workspace</a>@endguest
                         </div>
                     </div>
-                    <a class="nav-content-link" href="{{ route('marketplace.index') }}">Content marketplace <span class="nav-new">Explore</span></a>
+                    <a class="nav-content-link" href="{{ route('marketplace.index') }}">Content marketplace <span class="nav-new">services</span></a>
                     <div class="nav-dropdown nav-resources">
-                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="resources-menu" data-dropdown-toggle>Resources <span class="nav-caret" aria-hidden="true"></span></button>
+                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="resources-menu" data-dropdown-toggle>blog <span class="nav-caret" aria-hidden="true"></span></button>
                         <div class="nav-dropdown-menu nav-dropdown-menu-right" id="resources-menu">
                             <a href="{{ route('blog.index') }}" @class(['is-current' => request()->routeIs('blog.*')])>LINKVIO journal</a>
                             <a href="{{ route('contact') }}" @class(['is-current' => request()->routeIs('contact')])>Get in touch</a>

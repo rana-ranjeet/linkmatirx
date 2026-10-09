@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Admin\WebsiteModerationController;
 use App\Http\Controllers\Admin\BlogPostController as AdminBlogPostController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Advertiser\WebsiteFavoriteController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
@@ -11,6 +14,8 @@ use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PublicPageController;
 use App\Http\Controllers\Publisher\WebsiteController;
+use App\Http\Controllers\Publisher\DashboardController as PublisherDashboardController;
+use App\Http\Controllers\Publisher\SupportController as PublisherSupportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -48,16 +53,22 @@ Route::middleware(['auth', 'active', 'verified', 'role:advertiser'])->prefix('ad
 });
 
 Route::middleware(['auth', 'active', 'verified', 'role:publisher'])->prefix('publisher')->name('publisher.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+    Route::get('/dashboard', PublisherDashboardController::class)->name('dashboard');
+    Route::get('/support', [PublisherSupportController::class, 'index'])->name('support.index');
+    Route::post('/support', [PublisherSupportController::class, 'store'])->middleware('throttle:5,1')->name('support.store');
     Route::get('/websites', [WebsiteController::class, 'index'])->name('websites.index');
     Route::get('/websites/create', [WebsiteController::class, 'create'])->name('websites.create');
     Route::post('/websites', [WebsiteController::class, 'store'])->name('websites.store');
     Route::get('/websites/{website}/edit', [WebsiteController::class, 'edit'])->name('websites.edit');
     Route::put('/websites/{website}', [WebsiteController::class, 'update'])->name('websites.update');
+    Route::patch('/websites/{website}/availability', [WebsiteController::class, 'updateAvailability'])->name('websites.availability');
 });
 
 Route::middleware(['auth', 'active', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
+    Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
+    Route::get('/audit-logs', [AuditLogController::class, 'index'])->name('audit.index');
+    Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+    Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
     Route::get('/websites', [WebsiteModerationController::class, 'index'])->name('websites.index');
     Route::patch('/websites/{website}/review', [WebsiteModerationController::class, 'update'])->name('websites.review');
     Route::get('/blog', [AdminBlogPostController::class, 'index'])->name('blog.index');

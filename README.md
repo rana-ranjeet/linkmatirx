@@ -55,6 +55,20 @@ Advertiser order processing, checkout, payment verification, payouts, and most o
 
 Only active websites with `status = approved` appear in public search or on the homepage. The initial database includes publisher and advertiser profiles, website categories, and website listings. SEO metrics are nullable and display as “Not available” until imported from a real provider. Do not seed invented metrics or use sample listings as live inventory.
 
+## Publisher workspace
+
+Verified publishers can edit their business profile, submit and update website listings, see moderation notes, and pause or resume an approved listing. They can also submit support requests and see only their own requests. Publisher order acceptance, content-file access, delivery verification, earnings, and payouts are not active until their order and financial workflows are implemented.
+
+## Local demo accounts
+
+To populate a local development database with demo admin, publisher, and seller (advertiser) accounts plus sample listings, set `DEMO_ACCOUNT_PASSWORD` in `.env` to a strong password of at least 12 characters, then run:
+
+```powershell
+php artisan db:seed --class=Database\Seeders\DemoDataSeeder
+```
+
+All three accounts use that password and have verified email addresses. Sign in at `/login` with `demo-admin@linkvio.test`, `demo-publisher@linkvio.test`, or `demo-seller@linkvio.test`. This seeder is restricted to local and testing environments. Its sample websites use reserved `.test` domains, remain pending admin review, and contain no fabricated SEO metrics; they are not exposed as approved public inventory.
+
 ## Tests and checks
 
 Tests use an in-memory SQLite database, separate from the configured MySQL database:

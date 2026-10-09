@@ -14,7 +14,7 @@
             @if ($websites->isNotEmpty())
                 <div class="table-responsive listing-table-wrap">
                     <table class="table listing-table align-middle">
-                        <thead><tr><th>Website</th><th>Category</th><th>Services</th><th>Status</th><th>Review note</th><th></th></tr></thead>
+                        <thead><tr><th>Website</th><th>Category</th><th>Services</th><th>Status</th><th>Review note</th><th>Actions</th></tr></thead>
                         <tbody>
                         @foreach ($websites as $website)
                             <tr>
@@ -24,9 +24,24 @@
                                     @if ($website->guest_post_price_cents !== null)<small>Guest post: {{ $website->currency }} {{ number_format($website->guest_post_price_cents / 100, 2) }}</small>@endif
                                     @if ($website->link_insertion_price_cents !== null)<small>Link insertion: {{ $website->currency }} {{ number_format($website->link_insertion_price_cents / 100, 2) }}</small>@endif
                                 </td>
-                                <td><span class="status-badge status-{{ $website->status }}">{{ ucfirst($website->status) }}</span></td>
+                                <td>
+                                    <span class="status-badge {{ $website->status === 'approved' ? ($website->is_active ? 'status-approved' : 'status-pending') : 'status-'.$website->status }}">
+                                        {{ $website->status === 'approved' ? ($website->is_active ? 'Available' : 'Paused') : ucfirst($website->status) }}
+                                    </span>
+                                </td>
                                 <td>{{ $website->moderation_note ?: '—' }}</td>
-                                <td><a class="btn btn-sm btn-outline-primary" href="{{ route('publisher.websites.edit', $website) }}">Edit</a></td>
+                                <td>
+                                    <div class="publisher-listing-actions">
+                                        <a class="btn btn-sm btn-outline-primary" href="{{ route('publisher.websites.edit', $website) }}">Edit</a>
+                                        @if ($website->status === 'approved')
+                                            <form method="POST" action="{{ route('publisher.websites.availability', $website) }}">
+                                                @csrf @method('PATCH')
+                                                <input type="hidden" name="is_active" value="{{ $website->is_active ? '0' : '1' }}">
+                                                <button class="btn btn-sm {{ $website->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}" type="submit">{{ $website->is_active ? 'Pause' : 'Make available' }}</button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
                             </tr>
                         @endforeach
                         </tbody>
