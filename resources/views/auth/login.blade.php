@@ -29,7 +29,7 @@
             <input class="form-check-input" id="remember_me" type="checkbox" name="remember">
             <label class="form-check-label" for="remember_me">Remember me</label>
         </div>
-        <button class="btn btn-primary w-100" type="submit">Log in</button>
+        <button class="btn btn-primary w-100" type="submit">Sign in</button>
     </form>
     <p class="auth-switch">New to LINKVIO? <a href="{{ route('register', ['role' => 'advertiser']) }}">Join as an advertiser</a></p>
     <p class="auth-switch auth-switch-secondary">Publisher? <a href="{{ route('register', ['role' => 'publisher']) }}">Create a publisher account</a></p>

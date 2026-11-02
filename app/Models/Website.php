@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Website extends Model
 {
+    protected $hidden = [
+        'verification_token',
+    ];
+
     protected $fillable = [
         'publisher_id',
         'category_id',
@@ -30,19 +34,40 @@ class Website extends Model
         'reviewed_by',
         'reviewed_at',
         'moderation_note',
+        'verification_status',
+        'verified_at',
+        'last_verification_attempt_at',
+        'verification_override_by',
+        'verification_override_at',
+        'verification_override_reason',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (Website $website) {
+            $website->verification_token = bin2hex(random_bytes(32));
+        });
+    }
 
     protected function casts(): array
     {
         return [
             'metrics_updated_at' => 'datetime',
             'reviewed_at' => 'datetime',
+            'verified_at' => 'datetime',
+            'last_verification_attempt_at' => 'datetime',
+            'verification_override_at' => 'datetime',
         ];
     }
 
     public function scopeApproved(Builder $query): Builder
     {
-        return $query->where('status', 'approved')->where('is_active', true);
+        return $query->where('status', 'approved')
+            ->where('is_active', true)
+            ->where(function (Builder $query) {
+                $query->where('verification_status', 'verified')
+                    ->orWhereNotNull('verification_override_at');
+            });
     }
 
     public function publisher(): BelongsTo
@@ -58,6 +83,11 @@ class Website extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    public function verificationOverrider(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verification_override_by');
     }
 
     public function favoritedBy(): BelongsToMany

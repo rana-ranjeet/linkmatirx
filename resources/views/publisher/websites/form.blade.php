@@ -66,6 +66,81 @@
                     <button class="btn btn-primary" type="submit">{{ $isEditing ? 'Save and submit for review' : 'Submit website for review' }}</button>
                 </div>
             </form>
+            @if ($isEditing)
+                @php($verificationStatus = $website->verification_status ?? 'pending')
+                @php($metaTag = '<meta name="yourmarketplace-verification" content="'.$website->verification_token.'">')
+                <section class="profile-section verification-panel" aria-labelledby="verification-heading">
+                    <p class="eyebrow">Website ownership</p>
+                    <h2 id="verification-heading">Ownership verification</h2>
+                    <div class="verification-summary">
+                        <div><strong>Website URL</strong><a href="https://{{ $website->domain }}/" target="_blank" rel="noopener noreferrer">https://{{ $website->domain }}/</a></div>
+                        <div><strong>Status</strong><span class="status-badge status-{{ $verificationStatus }}">{{ ucfirst($verificationStatus) }}</span></div>
+                        <div><strong>Method</strong><span>HTML Meta Tag</span></div>
+                        @if ($website->verified_at)<div><strong>Verified at</strong><span>{{ $website->verified_at->format('Y-m-d H:i T') }}</span></div>@endif
+                    </div>
+                    <div class="verification-token">
+                        <label class="form-label" for="verification-token">Unique verification token</label>
+                        <div class="verification-copy-row">
+                            <input class="form-control" id="verification-token" type="text" value="{{ $website->verification_token }}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" data-copy-value="{{ $website->verification_token }}" aria-label="Copy verification token">Copy token</button>
+                        </div>
+                        <label class="form-label mt-3" for="verification-meta">Meta tag to add to your homepage</label>
+                        <div class="verification-copy-row">
+                            <input class="form-control" id="verification-meta" type="text" value="{{ $metaTag }}" readonly>
+                            <button class="btn btn-outline-secondary" type="button" data-copy-value="{{ $metaTag }}" aria-label="Copy verification meta tag">Copy meta tag</button>
+                        </div>
+                        <p class="form-hint" data-copy-feedback role="status" aria-live="polite"></p>
+                    </div>
+                    <h3 class="verification-instructions-title">How to verify</h3>
+                    <ol class="verification-instructions">
+                        <li>Copy the generated meta tag above.</li>
+                        <li>Open the homepage source or template for <strong>{{ $website->domain }}</strong>.</li>
+                        <li>Place the tag inside the homepage <code>&lt;head&gt;</code> section. In WordPress, edit your theme/header or use a trusted header-code plugin; in Laravel, add it to the homepage Blade layout; for custom HTML, edit the homepage file.</li>
+                        <li>Publish the change and confirm the tag is present in the publicly accessible homepage HTML.</li>
+                        <li>Return here and select Verify website.</li>
+                    </ol>
+                    @if ($verificationStatus !== 'verified')
+                        <form method="POST" action="{{ route('publisher.websites.verify', $website) }}" data-verification-form>
+                            @csrf
+                            <button class="btn btn-primary" type="submit" data-verification-submit>
+                                <span data-verification-label>Verify website</span>
+                                <span class="verification-spinner" data-verification-spinner hidden aria-hidden="true"></span>
+                            </button>
+                            <span class="visually-hidden" data-verification-progress role="status" aria-live="polite"></span>
+                            <p class="form-hint">You can retry after a failed check; verification attempts are limited to one per minute.</p>
+                        </form>
+                    @else
+                        <p class="verification-confirmation">Ownership was verified. Listing approval is a separate review.</p>
+                    @endif
+                </section>
+            @endif
         </div>
     </section>
 @endsection
+
+@push('scripts')
+    @if ($isEditing)
+        <script>
+            document.querySelectorAll('[data-copy-value]').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const feedback = document.querySelector('[data-copy-feedback]');
+
+                    try {
+                        await navigator.clipboard.writeText(button.dataset.copyValue);
+                        feedback.textContent = 'Copied to clipboard.';
+                    } catch {
+                        feedback.textContent = 'Clipboard access failed. Select and copy the value manually.';
+                    }
+                });
+            });
+
+            document.querySelector('[data-verification-form]')?.addEventListener('submit', () => {
+                const button = document.querySelector('[data-verification-submit]');
+                button.disabled = true;
+                document.querySelector('[data-verification-label]').textContent = 'Checking website…';
+                document.querySelector('[data-verification-spinner]').hidden = false;
+                document.querySelector('[data-verification-progress]').textContent = 'Website verification is in progress.';
+            });
+        </script>
+    @endif
+@endpush

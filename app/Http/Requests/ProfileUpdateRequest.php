@@ -41,6 +41,25 @@ class ProfileUpdateRequest extends FormRequest
                 'owns_sites' => ['nullable', Rule::in(['yes', 'no', 'both'])],
                 'already_selling_articles' => ['nullable', Rule::in(['yes', 'no'])],
             ];
+
+            $bankDetailsSupplied = collect([
+                'payout_account_holder_name',
+                'payout_bank_name',
+                'payout_account_number',
+                'payout_ifsc_code',
+                'payout_account_type',
+            ])->contains(fn (string $field): bool => $this->filled($field));
+
+            if ($bankDetailsSupplied) {
+                $rules += [
+                    'payout_account_holder_name' => ['required', 'string', 'max:255'],
+                    'payout_bank_name' => ['required', 'string', 'max:255'],
+                    'payout_account_number' => ['required', 'string', 'regex:/^[0-9]{6,34}$/'],
+                    'payout_account_number_confirmation' => ['required', 'same:payout_account_number'],
+                    'payout_ifsc_code' => ['required', 'string', 'regex:/^[A-Z]{4}0[A-Z0-9]{6}$/i'],
+                    'payout_account_type' => ['required', Rule::in(['savings', 'current'])],
+                ];
+            }
         }
 
         return $rules;

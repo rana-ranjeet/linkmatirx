@@ -39,9 +39,10 @@ class PublisherWebsiteTest extends TestCase
                 'guest_post_price' => '120.05',
                 'link_insertion_price' => '50',
             ])
-            ->assertRedirect(route('publisher.websites.index'))
+            ->assertRedirectContains('#verification-heading')
             ->assertSessionHasNoErrors();
 
+        $website = Website::query()->where('domain', 'example.com')->firstOrFail();
         $this->assertDatabaseHas('websites', [
             'publisher_id' => $publisher->id,
             'domain' => 'example.com',
@@ -51,6 +52,20 @@ class PublisherWebsiteTest extends TestCase
             'currency' => 'USD',
             'status' => 'pending',
         ]);
+        $this->get(route('publisher.websites.edit', $website))
+            ->assertOk()
+            ->assertSee('Ownership verification')
+            ->assertSee('Pending')
+            ->assertSee('HTML Meta Tag')
+            ->assertSee($website->verification_token)
+            ->assertSee('value="&lt;meta name=&quot;yourmarketplace-verification&quot; content=&quot;'.$website->verification_token.'&quot;&gt;"', false)
+            ->assertSee('Copy token')
+            ->assertSee('Copy meta tag')
+            ->assertSee('Verify website');
+        $this->get(route('publisher.websites.index'))
+            ->assertOk()
+            ->assertSee('Ownership verification')
+            ->assertSee('Verify website');
     }
 
     public function test_publisher_must_set_at_least_one_positive_service_price(): void
@@ -99,7 +114,7 @@ class PublisherWebsiteTest extends TestCase
                 'domain' => 'approved.example',
                 'guest_post_price' => '125.00',
             ])
-            ->assertRedirect(route('publisher.websites.index'))
+            ->assertRedirectContains('#verification-heading')
             ->assertSessionHasNoErrors();
 
         $this->assertDatabaseHas('websites', [
@@ -108,5 +123,36 @@ class PublisherWebsiteTest extends TestCase
             'guest_post_price_cents' => 12500,
             'reviewed_at' => null,
         ]);
+    }
+
+    public function test_changing_a_verified_website_domain_rotates_its_token_and_resets_verification(): void
+    {
+        $publisher = User::factory()->create(['role' => UserRole::Publisher]);
+        $website = Website::create([
+            'publisher_id' => $publisher->id,
+            'domain' => 'old-domain.example',
+            'guest_post_price_cents' => 10000,
+            'status' => 'approved',
+            'verification_status' => 'verified',
+            'verified_at' => now(),
+        ]);
+        $oldToken = $website->verification_token;
+
+        $this->actingAs($publisher)
+            ->put(route('publisher.websites.update', $website), [
+                'domain' => 'new-domain.example',
+                'guest_post_price' => '125',
+            ])
+            ->assertRedirectContains('#verification-heading')
+            ->assertSessionHasNoErrors();
+
+        $this->assertDatabaseHas('websites', [
+            'id' => $website->id,
+            'domain' => 'new-domain.example',
+            'status' => 'pending',
+            'verification_status' => 'pending',
+            'verified_at' => null,
+        ]);
+        $this->assertNotSame($oldToken, $website->fresh()->verification_token);
     }
 }

@@ -66,7 +66,7 @@ class MarketplaceController extends Controller
 
     public function show(Website $website): View
     {
-        abort_unless($website->status === 'approved' && $website->is_active, 404);
+        abort_unless(Website::approved()->whereKey($website->getKey())->exists(), 404);
 
         $website->load(['category', 'publisher']);
 

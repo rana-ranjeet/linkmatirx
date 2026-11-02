@@ -36,6 +36,21 @@
                             <div><label class="form-label" for="owns_sites">Do you own the sites?</label><select class="form-select" id="owns_sites" name="owns_sites"><option value="">Select</option>@foreach (['yes', 'no', 'both'] as $choice)<option value="{{ $choice }}" @selected(old('owns_sites', $publisherProfile?->owns_sites) === $choice)>{{ str($choice)->headline() }}</option>@endforeach</select>@error('owns_sites')<p class="field-error">{{ $message }}</p>@enderror</div>
                             <div><label class="form-label" for="already_selling_articles">Already selling articles?</label><select class="form-select" id="already_selling_articles" name="already_selling_articles"><option value="">Select</option>@foreach (['yes', 'no'] as $choice)<option value="{{ $choice }}" @selected(old('already_selling_articles', $publisherProfile?->already_selling_articles) === $choice)>{{ str($choice)->headline() }}</option>@endforeach</select>@error('already_selling_articles')<p class="field-error">{{ $message }}</p>@enderror</div>
                         </div>
+                        <h3 class="profile-subheading" id="payout-details">Bank details for manual payouts</h3>
+                        <p>These details are saved securely for future manual bank transfers. LINKVIO does not process orders or payouts yet.</p>
+                        @if ($publisherProfile?->payout_account_number)
+                            <p>Bank account saved (ending in {{ substr($publisherProfile->payout_account_number, -4) }}). To replace it, enter all bank details below.</p>
+                        @endif
+                        <div><label class="form-label" for="payout_account_holder_name">Account holder name</label><input class="form-control" id="payout_account_holder_name" name="payout_account_holder_name" maxlength="255" value="{{ old('payout_account_holder_name') }}" autocomplete="off">@error('payout_account_holder_name')<p class="field-error">{{ $message }}</p>@enderror</div>
+                        <div class="form-row">
+                            <div><label class="form-label" for="payout_bank_name">Bank name</label><input class="form-control" id="payout_bank_name" name="payout_bank_name" maxlength="255" value="{{ old('payout_bank_name') }}" autocomplete="off">@error('payout_bank_name')<p class="field-error">{{ $message }}</p>@enderror</div>
+                            <div><label class="form-label" for="payout_account_type">Account type</label><select class="form-select" id="payout_account_type" name="payout_account_type"><option value="">Select account type</option>@foreach (['savings', 'current'] as $type)<option value="{{ $type }}" @selected(old('payout_account_type') === $type)>{{ str($type)->headline() }}</option>@endforeach</select>@error('payout_account_type')<p class="field-error">{{ $message }}</p>@enderror</div>
+                        </div>
+                        <div class="form-row">
+                            <div><label class="form-label" for="payout_account_number">Account number</label><input class="form-control" id="payout_account_number" name="payout_account_number" type="password" inputmode="numeric" autocomplete="new-password">@error('payout_account_number')<p class="field-error">{{ $message }}</p>@enderror</div>
+                            <div><label class="form-label" for="payout_account_number_confirmation">Confirm account number</label><input class="form-control" id="payout_account_number_confirmation" name="payout_account_number_confirmation" type="password" inputmode="numeric" autocomplete="new-password">@error('payout_account_number_confirmation')<p class="field-error">{{ $message }}</p>@enderror</div>
+                        </div>
+                        <div><label class="form-label" for="payout_ifsc_code">IFSC code</label><input class="form-control" id="payout_ifsc_code" name="payout_ifsc_code" maxlength="11" value="{{ old('payout_ifsc_code') }}" autocomplete="off">@error('payout_ifsc_code')<p class="field-error">{{ $message }}</p>@enderror</div>
                     @endif
                     @if (! $user->hasVerifiedEmail())
                         <p class="mb-0">Your email address is not verified. <button class="btn btn-link p-0 align-baseline" form="send-verification" type="submit">Resend verification email</button></p>

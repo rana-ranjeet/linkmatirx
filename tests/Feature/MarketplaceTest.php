@@ -38,6 +38,20 @@ class MarketplaceTest extends TestCase
             ->assertDontSee('not-listed.example');
     }
 
+    public function test_approved_but_unverified_websites_are_not_published_directly_or_in_search(): void
+    {
+        $publisher = User::factory()->create(['role' => UserRole::Publisher]);
+        $website = Website::create([
+            'publisher_id' => $publisher->id,
+            'domain' => 'not-verified.example',
+            'status' => 'approved',
+            'guest_post_price_cents' => 12500,
+        ]);
+
+        $this->get(route('marketplace.index'))->assertDontSee('not-verified.example');
+        $this->get(route('marketplace.show', $website))->assertNotFound();
+    }
+
     public function test_marketplace_filters_by_service_and_zero_price(): void
     {
         $publisher = User::factory()->create(['role' => UserRole::Publisher]);
@@ -66,6 +80,8 @@ class MarketplaceTest extends TestCase
             'publisher_id' => $publisher->id,
             'domain' => $domain,
             'status' => $status,
+            'verification_status' => $status === 'approved' ? 'verified' : 'pending',
+            'verified_at' => $status === 'approved' ? now() : null,
             'guest_post_price_cents' => $priceCents,
         ]);
     }

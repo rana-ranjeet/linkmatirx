@@ -1,20 +1,24 @@
 const navToggle = document.querySelector('[data-nav-toggle]');
 const navMenu = document.querySelector('[data-nav-menu]');
-const navBackdrop = document.querySelector('[data-drawer-close]');
 
-const closeNavigation = () => {
+const closeNavigation = ({ closeMenu = false } = {}) => {
     document.querySelectorAll('.nav-dropdown.is-open').forEach((dropdown) => {
         dropdown.classList.remove('is-open');
         dropdown.querySelector('[data-dropdown-toggle]')?.setAttribute('aria-expanded', 'false');
     });
 
-    navBackdrop?.setAttribute('hidden', '');
-    document.body.classList.remove('nav-drawer-open');
+    if (closeMenu) {
+        navMenu?.classList.remove('is-open');
+        navToggle?.setAttribute('aria-expanded', 'false');
+    }
 };
 
 navToggle?.addEventListener('click', () => {
     const isOpen = navMenu?.classList.toggle('is-open') ?? false;
     navToggle.setAttribute('aria-expanded', String(isOpen));
+    if (!isOpen) {
+        closeNavigation();
+    }
 });
 
 document.querySelectorAll('[data-dropdown-toggle]').forEach((toggle) => {
@@ -24,24 +28,36 @@ document.querySelectorAll('[data-dropdown-toggle]').forEach((toggle) => {
         closeNavigation();
         if (!wasOpen) {
             dropdown?.classList.add('is-open');
-            navBackdrop?.removeAttribute('hidden');
-            document.body.classList.add('nav-drawer-open');
+            toggle.setAttribute('aria-expanded', 'true');
         }
-        const isOpen = !wasOpen;
-        toggle.setAttribute('aria-expanded', String(isOpen));
     });
 });
 
-navBackdrop?.addEventListener('click', closeNavigation);
+document.addEventListener('click', (event) => {
+    if (!(event.target instanceof Node)) {
+        return;
+    }
 
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        closeNavigation();
+    if (!navMenu?.contains(event.target) && !navToggle?.contains(event.target)) {
+        closeNavigation({ closeMenu: navMenu?.classList.contains('is-open') ?? false });
     }
 });
 
-document.querySelectorAll('.nav-dropdown-menu a').forEach((link) => {
-    link.addEventListener('click', closeNavigation);
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        const hadOpenDropdown = document.querySelector('.nav-dropdown.is-open');
+        const menuIsOpen = navMenu?.classList.contains('is-open') ?? false;
+        closeNavigation({ closeMenu: menuIsOpen });
+        if (menuIsOpen) {
+            navToggle?.focus();
+        } else if (hadOpenDropdown instanceof HTMLElement) {
+            hadOpenDropdown.querySelector('[data-dropdown-toggle]')?.focus();
+        }
+    }
+});
+
+navMenu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => closeNavigation({ closeMenu: true }));
 });
 
 document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {

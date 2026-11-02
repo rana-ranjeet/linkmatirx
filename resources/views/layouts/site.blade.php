@@ -26,41 +26,33 @@
 <body>
     <header class="site-header">
         <div class="container site-nav">
-            <a class="brand" href="{{ route('home') }}"><span class="brand-mark">L</span> LINKmatrix</a>
-            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" data-nav-toggle>
+            <a class="brand" href="{{ route('home') }}"><span class="brand-mark">L</span> LINKVIO</a>
+            <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
                 <span></span><span></span><span></span>
             </button>
-            <nav class="site-nav-links" data-nav-menu aria-label="Main navigation">
+            <nav class="site-nav-links" id="site-navigation" data-nav-menu aria-label="Main navigation">
                 <div class="nav-primary">
+                    <a @class(['is-current' => request()->routeIs('home')]) href="{{ route('home') }}">Home</a>
+                    <a @class(['is-current' => request()->routeIs('marketplace.*')]) href="{{ route('marketplace.index') }}">Marketplace</a>
                     <div class="nav-dropdown">
-                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="solutions-menu" data-dropdown-toggle>home <span class="nav-caret" aria-hidden="true"></span></button>
+                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="solutions-menu" data-dropdown-toggle>Solutions <span class="nav-caret" aria-hidden="true"></span></button>
                         <div class="nav-dropdown-menu" id="solutions-menu">
-                            <a href="{{ route('marketplace.index') }}" @class(['is-current' => request()->routeIs('marketplace.*')])>Publisher marketplace</a>
                             <a href="{{ route('register', ['role' => 'advertiser']) }}">For advertisers</a>
                             <a href="{{ route('register', ['role' => 'publisher']) }}">For publishers</a>
-                        </div>
-                    </div>
-                    <div class="nav-dropdown">
-                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="features-menu" data-dropdown-toggle>about us <span class="nav-caret" aria-hidden="true"></span></button>
-                        <div class="nav-dropdown-menu" id="features-menu">
-                            <a href="{{ route('marketplace.index') }}">Website discovery</a>
-                            <a href="{{ route('how-it-works') }}">Publisher partnerships</a>
+                            <a @class(['is-current' => request()->routeIs('how-it-works')]) href="{{ route('how-it-works') }}">How it works</a>
                             @guest<a href="{{ route('register') }}">Campaign workspace</a>@else<a href="{{ route('dashboard') }}">Campaign workspace</a>@endguest
                         </div>
                     </div>
-                    <a class="nav-content-link" href="{{ route('marketplace.index') }}">Content marketplace <span class="nav-new">services</span></a>
                     <div class="nav-dropdown nav-resources">
-                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="resources-menu" data-dropdown-toggle>blog <span class="nav-caret" aria-hidden="true"></span></button>
+                        <button class="nav-dropdown-toggle" type="button" aria-expanded="false" aria-controls="resources-menu" data-dropdown-toggle>Resources <span class="nav-caret" aria-hidden="true"></span></button>
                         <div class="nav-dropdown-menu nav-dropdown-menu-right" id="resources-menu">
-                            <a href="{{ route('blog.index') }}" @class(['is-current' => request()->routeIs('blog.*')])>LINKVIO journal</a>
-                            <a href="{{ route('contact') }}" @class(['is-current' => request()->routeIs('contact')])>Get in touch</a>
-                            <a href="{{ route('about') }}" @class(['is-current' => request()->routeIs('about')])>Our story</a>
-                            <a href="{{ route('faqs') }}" @class(['is-current' => request()->routeIs('faqs')])>Help center</a>
-                            <a href="{{ route('how-it-works') }}" @class(['is-current' => request()->routeIs('how-it-works')])>How it works</a>
-                            <a href="{{ route('register', ['role' => 'publisher']) }}">Become a publisher</a>
+                            <a @class(['is-current' => request()->routeIs('blog.*')]) href="{{ route('blog.index') }}">Blog</a>
+                            <a @class(['is-current' => request()->routeIs('about')]) href="{{ route('about') }}">About LINKVIO</a>
+                            <a @class(['is-current' => request()->routeIs('faqs')]) href="{{ route('faqs') }}">Help center</a>
+                            <a @class(['is-current' => request()->routeIs('contact')]) href="{{ route('contact') }}">Contact</a>
                         </div>
                     </div>
-                    <a href="{{ route('pricing') }}">Pricing</a>
+                    <a @class(['is-current' => request()->routeIs('pricing')]) href="{{ route('pricing') }}">Pricing</a>
                 </div>
                 <div class="nav-actions">
                     @auth
@@ -70,18 +62,19 @@
                             <button type="submit">Log out</button>
                         </form>
                     @else
-                        <a class="nav-login" href="{{ route('login') }}">Log in</a>
-                        <a class="btn nav-cta" href="{{ route('register') }}">Get started <span aria-hidden="true">&rarr;</span></a>
-                        <a class="btn nav-cta-secondary" href="{{ route('contact') }}">Talk to us</a>
+                        <a class="nav-login" href="{{ route('login') }}">Sign in</a>
+                        <a class="btn nav-cta" href="{{ route('register') }}">Sign up <span aria-hidden="true">&rarr;</span></a>
                     @endauth
                 </div>
             </nav>
         </div>
-        <button class="nav-drawer-backdrop" type="button" aria-label="Close navigation menu" data-drawer-close hidden></button>
     </header>
 
     @if (session('status'))
         <div class="container mt-3"><div class="alert alert-success mb-0">{{ session('status') }}</div></div>
+    @endif
+    @if (session('error'))
+        <div class="container mt-3"><div class="alert alert-danger mb-0" role="alert">{{ session('error') }}</div></div>
     @endif
 
     <main>
@@ -104,5 +97,6 @@
             <span>&copy; {{ now()->year }} LINKVIO</span>
         </div>
     </footer>
+    @stack('scripts')
 </body>
 </html>

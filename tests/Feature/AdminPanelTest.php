@@ -132,7 +132,7 @@ class AdminPanelTest extends TestCase
 
         $this->get(route('admin.audit.index', ['action' => 'suspend']))
             ->assertOk()
-            ->assertSee('Account access audit log')
+            ->assertSee('Administrator audit log')
             ->assertSee('Audit history test reason.')
             ->assertSee($admin->email)
             ->assertSee($user->email);

@@ -38,6 +38,14 @@ class ProfileController extends Controller
         $user->save();
 
         if ($user->role === UserRole::Publisher) {
+            $payoutDetails = isset($validated['payout_account_number']) ? [
+                'payout_account_holder_name' => $validated['payout_account_holder_name'],
+                'payout_bank_name' => $validated['payout_bank_name'],
+                'payout_account_number' => $validated['payout_account_number'],
+                'payout_ifsc_code' => strtoupper($validated['payout_ifsc_code']),
+                'payout_account_type' => $validated['payout_account_type'],
+            ] : [];
+
             $user->publisherProfile()->updateOrCreate(
                 ['user_id' => $user->id],
                 [
@@ -50,6 +58,7 @@ class ProfileController extends Controller
                     'do_follow_links' => $validated['do_follow_links'] ?? null,
                     'owns_sites' => $validated['owns_sites'] ?? null,
                     'already_selling_articles' => $validated['already_selling_articles'] ?? null,
+                    ...$payoutDetails,
                 ],
             );
         }

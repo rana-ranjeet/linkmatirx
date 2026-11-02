@@ -63,6 +63,7 @@ Route::middleware(['auth', 'active', 'verified', 'role:publisher'])->prefix('pub
     Route::post('/websites', [WebsiteController::class, 'store'])->name('websites.store');
     Route::get('/websites/{website}/edit', [WebsiteController::class, 'edit'])->name('websites.edit');
     Route::put('/websites/{website}', [WebsiteController::class, 'update'])->name('websites.update');
+    Route::post('/websites/{website}/verify', [WebsiteController::class, 'verify'])->middleware('throttle:5,1')->name('websites.verify');
     Route::patch('/websites/{website}/availability', [WebsiteController::class, 'updateAvailability'])->name('websites.availability');
 });
 

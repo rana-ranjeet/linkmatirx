@@ -30,6 +30,12 @@
                     <a class="text-link" href="{{ route('profile.edit') }}">Complete profile <span aria-hidden="true">&rarr;</span></a>
                 </article>
                 <article class="dashboard-card">
+                    <span class="dashboard-icon">B</span>
+                    <h2>Bank details</h2>
+                    <p>Add or update your bank account for future manual payouts.</p>
+                    <a class="text-link" href="{{ route('profile.edit') }}#payout-details">Add bank details <span aria-hidden="true">&rarr;</span></a>
+                </article>
+                <article class="dashboard-card">
                     <span class="dashboard-icon">?</span>
                     <h2>Support requests</h2>
                     <p>{{ $openSupportCount }} open {{ \Illuminate\Support\Str::plural('request', $openSupportCount) }}.</p>
@@ -54,7 +60,11 @@
                             <strong>{{ $website->domain }}</strong>
                             <small>
                                 @if ($website->status === 'approved')
-                                    {{ $website->is_active ? 'Available in the marketplace' : 'Paused by you' }}
+                                    @if ($website->verification_status === 'verified' || $website->verification_override_at)
+                                        {{ $website->is_active ? 'Available in the marketplace' : 'Paused by you' }}
+                                    @else
+                                        Approved by admin · ownership verification required before marketplace publication
+                                    @endif
                                 @elseif ($website->status === 'rejected')
                                     Rejected · {{ $website->moderation_note ?: 'Contact support for details.' }}
                                 @else
@@ -62,8 +72,8 @@
                                 @endif
                             </small>
                         </div>
-                        <span class="status-badge {{ $website->status === 'approved' && $website->is_active ? 'status-approved' : ($website->status === 'rejected' ? 'status-rejected' : 'status-pending') }}">
-                            {{ $website->status === 'approved' ? ($website->is_active ? 'Available' : 'Paused') : str($website->status)->headline() }}
+                        <span class="status-badge {{ $website->status === 'approved' && $website->is_active && ($website->verification_status === 'verified' || $website->verification_override_at) ? 'status-approved' : ($website->status === 'rejected' ? 'status-rejected' : 'status-pending') }}">
+                            {{ $website->status === 'approved' ? ($website->verification_status !== 'verified' && ! $website->verification_override_at ? 'Needs verification' : ($website->is_active ? 'Available' : 'Paused')) : str($website->status)->headline() }}
                         </span>
                     </div>
                 @empty
@@ -76,6 +86,7 @@
                 <h2>Manage your publisher account</h2>
                 <div class="admin-module-grid">
                     <a class="admin-module-card" href="{{ route('profile.edit') }}"><strong>Publisher profile</strong><span>Edit your business details and publisher information.</span><small>Available</small></a>
+                    <a class="admin-module-card" href="{{ route('profile.edit') }}#payout-details"><strong>Bank details</strong><span>Save or update your bank details for future manual payouts.</span><small>Available</small></a>
                     <a class="admin-module-card" href="{{ route('publisher.websites.index') }}"><strong>Website inventory</strong><span>Submit sites, edit pricing, view admin review notes, and pause approved listings.</span><small>Available</small></a>
                     <a class="admin-module-card" href="{{ route('publisher.support.index') }}"><strong>Support</strong><span>Raise a ticket and see your submitted support requests.</span><small>Available</small></a>
                     <div class="admin-module-card is-planned"><strong>Orders and content files</strong><span>Accept or reject assigned work, view briefs, download files, and respond to revisions.</span><small>Planned phase</small></div>

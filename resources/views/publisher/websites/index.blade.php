@@ -14,9 +14,10 @@
             @if ($websites->isNotEmpty())
                 <div class="table-responsive listing-table-wrap">
                     <table class="table listing-table align-middle">
-                        <thead><tr><th>Website</th><th>Category</th><th>Services</th><th>Status</th><th>Review note</th><th>Actions</th></tr></thead>
+                        <thead><tr><th>Website</th><th>Category</th><th>Services</th><th>Listing status</th><th>Ownership verification</th><th>Review note</th><th>Actions</th></tr></thead>
                         <tbody>
                         @foreach ($websites as $website)
+                            @php($marketplaceEligible = $website->verification_status === 'verified' || $website->verification_override_at !== null)
                             <tr>
                                 <td><strong>{{ $website->domain }}</strong><small>{{ $website->country_code ?? 'Country not set' }} · {{ $website->language_code ?? 'Language not set' }}</small></td>
                                 <td>{{ $website->category?->name ?? 'Not selected' }}</td>
@@ -25,14 +26,22 @@
                                     @if ($website->link_insertion_price_cents !== null)<small>Link insertion: {{ $website->currency }} {{ number_format($website->link_insertion_price_cents / 100, 2) }}</small>@endif
                                 </td>
                                 <td>
-                                    <span class="status-badge {{ $website->status === 'approved' ? ($website->is_active ? 'status-approved' : 'status-pending') : 'status-'.$website->status }}">
-                                        {{ $website->status === 'approved' ? ($website->is_active ? 'Available' : 'Paused') : ucfirst($website->status) }}
+                                    <span class="status-badge {{ $website->status === 'approved' && $website->is_active && $marketplaceEligible ? 'status-approved' : ($website->status === 'rejected' ? 'status-rejected' : 'status-pending') }}">
+                                        {{ $website->status === 'approved' ? ($marketplaceEligible ? ($website->is_active ? 'Available' : 'Paused') : ($website->is_active ? 'Needs verification' : 'Paused · needs verification')) : ucfirst($website->status) }}
                                     </span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-{{ $website->verification_status }}">{{ ucfirst($website->verification_status) }}</span>
+                                    <small>HTML Meta Tag</small>
+                                    @if ($website->verified_at)<small>{{ $website->verified_at->format('Y-m-d H:i T') }}</small>@endif
                                 </td>
                                 <td>{{ $website->moderation_note ?: '—' }}</td>
                                 <td>
                                     <div class="publisher-listing-actions">
                                         <a class="btn btn-sm btn-outline-primary" href="{{ route('publisher.websites.edit', $website) }}">Edit</a>
+                                        <a class="btn btn-sm {{ $website->verification_status === 'verified' ? 'btn-outline-secondary' : 'btn-primary' }}" href="{{ route('publisher.websites.edit', $website) }}#verification-heading">
+                                            {{ $website->verification_status === 'verified' ? 'Verification details' : 'Verify website' }}
+                                        </a>
                                         @if ($website->status === 'approved')
                                             <form method="POST" action="{{ route('publisher.websites.availability', $website) }}">
                                                 @csrf @method('PATCH')

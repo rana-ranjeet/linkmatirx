@@ -6,7 +6,7 @@ Administrators can create and manage SEO blog posts in the protected admin works
 
 ## Requirements
 
-- PHP 8.2 or newer with `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, and `zip`
+- PHP 8.2 or newer with `curl`, `dom`, `pdo_mysql`, `mbstring`, `openssl`, `fileinfo`, and `zip`
 - Composer
 - MySQL 8 or compatible
 - Node.js and npm
@@ -53,11 +53,11 @@ Advertiser order processing, checkout, payment verification, payouts, and most o
 
 ## Marketplace data
 
-Only active websites with `status = approved` appear in public search or on the homepage. The initial database includes publisher and advertiser profiles, website categories, and website listings. SEO metrics are nullable and display as “Not available” until imported from a real provider. Do not seed invented metrics or use sample listings as live inventory.
+Only active websites with `status = approved` and a successful ownership verification appear in public search or on the homepage. An administrator can explicitly override verification when approving a listing; the reason and administrator are recorded in the audit log. Listing approval and technical ownership verification are separate decisions. The initial database includes publisher and advertiser profiles, website categories, and website listings. SEO metrics are nullable and display as “Not available” until imported from a real provider. Do not seed invented metrics or use sample listings as live inventory.
 
 ## Publisher workspace
 
-Verified publishers can edit their business profile, submit and update website listings, see moderation notes, and pause or resume an approved listing. They can also submit support requests and see only their own requests. Publisher order acceptance, content-file access, delivery verification, earnings, and payouts are not active until their order and financial workflows are implemented.
+Verified publishers can edit their business profile, submit and update website listings, verify website ownership with a unique HTML meta tag from the listing's edit/details page, see moderation notes, and pause or resume an approved listing. Add the displayed `<meta name="yourmarketplace-verification" content="...">` tag to the homepage `<head>` (WordPress, Laravel Blade, and custom HTML are supported), publish the homepage, then return to the listing and select **Verify website**. A successful check displays a **Verified** status, a verification timestamp, and a success message; a missing tag or mismatched token displays an error, and the publisher can retry after one minute. The status is also visible in **Your websites → Ownership verification**. The verifier requires a publicly accessible homepage, validates every DNS result and redirect destination, pins requests to a validated public IP, and limits time and response size. It blocks private/reserved network addresses. Website ownership verification does not itself approve a listing: the **Approved** badge refers to listing review, not whether the meta tag has been verified. Publishers can also save their Indian bank account details from **Profile → Bank details** for future manual transfers; account holder names and account numbers are encrypted at rest. This only saves payout details—orders, checkout, and actual payouts are not implemented. Publishers can submit support requests and see only their own requests. Publisher order acceptance, content-file access, delivery verification, earnings, and payouts are not active until their order and financial workflows are implemented.
 
 ## Content writer workflow
 

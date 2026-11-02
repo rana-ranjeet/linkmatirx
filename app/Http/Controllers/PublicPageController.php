@@ -63,10 +63,10 @@ class PublicPageController extends Controller
                 'title' => 'A few things to know',
                 'intro' => 'Here are answers about the marketplace as it works today.',
                 'cards' => [
-                    ['title' => 'Are all websites public?', 'body' => 'No. Only active websites approved by an administrator appear in public search.'],
+                    ['title' => 'Are all websites public?', 'body' => 'No. Only active websites approved by an administrator and technically verified for ownership appear in public search. An authorized administrator can explicitly override verification and that decision is audited.'],
                     ['title' => 'Where do SEO metrics come from?', 'body' => 'Metrics are displayed only when supplied with a named provider and update date. Missing values show “Not available.”'],
                     ['title' => 'Can I order a placement right now?', 'body' => 'The directory, publisher listing workflow, and favorites work now. Secure checkout and order fulfillment are still being implemented.'],
-                    ['title' => 'How do I list my website?', 'body' => 'Create a publisher account, verify your email, then submit your website for administrator review.'],
+                    ['title' => 'How do I list my website?', 'body' => 'Create a publisher account, verify your email, submit your website for administrator review, then add the generated ownership-verification meta tag to your homepage.'],
                 ],
                 'cta' => 'Browse websites',
                 'route' => 'marketplace.index',

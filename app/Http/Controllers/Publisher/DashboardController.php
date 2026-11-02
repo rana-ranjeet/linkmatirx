@@ -14,14 +14,15 @@ class DashboardController extends Controller
     {
         $publisher = $request->user();
         $websites = Website::where('publisher_id', $publisher->id);
+        $marketplaceWebsites = Website::approved()->where('publisher_id', $publisher->id);
 
         return view('publisher.dashboard', [
             'websiteStats' => [
                 'total' => (clone $websites)->count(),
                 'pending' => (clone $websites)->where('status', 'pending')->count(),
                 'approved' => (clone $websites)->where('status', 'approved')->count(),
-                'available' => (clone $websites)->where('status', 'approved')->where('is_active', true)->count(),
-                'paused' => (clone $websites)->where('status', 'approved')->where('is_active', false)->count(),
+                'available' => (clone $marketplaceWebsites)->where('is_active', true)->count(),
+                'paused' => (clone $marketplaceWebsites)->where('is_active', false)->count(),
             ],
             'profile' => $publisher->publisherProfile,
             'openSupportCount' => ContactInquiry::where('user_id', $publisher->id)->where('status', 'open')->count(),

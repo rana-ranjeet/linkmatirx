@@ -23,7 +23,7 @@ class WebsiteFavoriteController extends Controller
 
     public function store(Request $request, Website $website): RedirectResponse
     {
-        abort_unless($website->status === 'approved' && $website->is_active, 404);
+        abort_unless(Website::approved()->whereKey($website->getKey())->exists(), 404);
 
         $request->user()->favoriteWebsites()->syncWithoutDetaching([$website->id]);
 

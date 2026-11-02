@@ -21,6 +21,8 @@ class WebsiteFavoriteTest extends TestCase
             'domain' => 'favorite.example',
             'guest_post_price_cents' => 12000,
             'status' => 'approved',
+            'verification_status' => 'verified',
+            'verified_at' => now(),
         ]);
 
         $this->actingAs($advertiser)
@@ -52,6 +54,24 @@ class WebsiteFavoriteTest extends TestCase
             'domain' => 'pending-favorite.example',
             'guest_post_price_cents' => 12000,
             'status' => 'pending',
+        ]);
+
+        $this->actingAs($advertiser)
+            ->post(route('advertiser.favorites.store', $website))
+            ->assertNotFound();
+
+        $this->assertDatabaseCount('website_favorites', 0);
+    }
+
+    public function test_unverified_approved_websites_cannot_be_saved_as_favorites(): void
+    {
+        $advertiser = User::factory()->create(['role' => UserRole::Advertiser]);
+        $publisher = User::factory()->create(['role' => UserRole::Publisher]);
+        $website = Website::create([
+            'publisher_id' => $publisher->id,
+            'domain' => 'unverified-favorite.example',
+            'guest_post_price_cents' => 12000,
+            'status' => 'approved',
         ]);
 
         $this->actingAs($advertiser)

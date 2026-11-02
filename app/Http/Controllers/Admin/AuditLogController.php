@@ -13,7 +13,7 @@ class AuditLogController extends Controller
     public function index(Request $request): View
     {
         $filters = $request->validate([
-            'action' => ['nullable', Rule::in(['change_role', 'suspend', 'reactivate'])],
+            'action' => ['nullable', Rule::in(['change_role', 'suspend', 'reactivate', 'website_approval_override'])],
             'q' => ['nullable', 'string', 'max:100'],
         ]);
 
